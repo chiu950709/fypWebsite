@@ -12,16 +12,18 @@ router.get('/', function(req, res, next) {
 
 
 //find/search
-router.get('/testing', function(req, res){
-	search(function(result){
+router.get('/testing/:scope', function(req, res){
+	var searchingCriteria = {};
+	searchingCriteria.Scope = req.params.scope;
+	search(searchingCriteria, function(result){
 		res.setHeader("content-type","application/json");
 		res.send(result);
 	});
 });
-var search = function(callback){
+function search(searchingCriteria, callback){
 	mongodb.connect(url, {userNewUrlParser: true}, function(err, client){
 		console.log("Connected");
-		client.db("fyp").collection("exam").find({}).toArray(function(err,result){
+		client.db("fyp").collection("exam").find(searchingCriteria).toArray(function(err,result){
 			callback(result);
 		});
 	});
