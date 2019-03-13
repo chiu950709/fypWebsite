@@ -60,56 +60,121 @@ function insert(query, callback){
 //compile
 router.post('/compile', function(req, res){
 	var code = req.body.code;
-	var output;
-	var output;
-	console.log(code);
-	fs.writeFile('Temp.java', code, function (err) {
-	  if (err) throw err;
-	  console.log('File Saved!');
-	  compile_temp(function(response){
-	  	console.log(response);
-		res.setHeader("content-type","text/html");
+	var class_identifier = ("public class ");
+	var index1 = code.indexOf(class_identifier);
+	index1 == -1 ? -1 : (index1 += class_identifier.length);
+	var respondfail = true;
+	
+	if(index1 != -1){
+
+		var index2 = code.indexOf(" ",index1);
+		var index3 = code.indexOf("{",index1);
+		var class_name;
+
+		if(index2 != -1){
+			class_name = code.substring(index1,index2);
+			respondfail = false;
+		}else if(index3 != -1){
+			class_name = code.substring(index1,index3);
+			respondfail = false;
+		}
+		
+		if(respondfail == false){
+			fs.writeFile(class_name + '.java', code, function (err) {
+			  if (err) throw err;
+			  console.log('File Saved as ' + class_name+'.java');
+			  compile_temp(class_name ,function(response){
+			  	console.log(response);
+			  	console.log("hi123");
+				res.setHeader("content-type","application/json");
+				res.send(response);
+				removeFile(class_name);
+			  	});
+			});
+		}
+	}
+	if(respondfail){
+		var response = {};
+		response.output = 'Cannot identify class name.';
+		res.setHeader("content-type","tapplication/json");
 		res.send(response);
-	  	});
-	});
+	}
 });
 
-function compile_temp(callback){
+function compile_temp(className,callback){
+	console.log("compileJava()");
+	compileJava(className,function(response){
+		console.log("runJava()" );
+		if(response.compileErr == undefined){
+			runJava(className,response,function(response){
+			console.log("After runJava() ");
+			callback(response);
+			})
+		}else{
+			callback(response);
+		}
+	});
+
+}
+
+function removeFile(fileName){
+	
+	var fs = require('fs');
+	var filePath = process.cwd() + "/" + fileName;
+	console.log(filePath);
+	//fs.unlink
+
+}
+
+async function compileJava(className,callback){
+
 	var process = require('child_process');
+	var bstr = "";
+	var response = {};
+
+	var options={encoding:'utf8'};
+	var javac  = process.spawn('javac', [className+'.java'],options);
+
+	javac.stderr.on('data', function (data) {
+	  bstr = bstr + data.toString();
+	  response.compileErr = bstr;
+	});
+
+
+	javac.on('close', function (code) {
+		callback(response);
+	});
+
+}
+
+async function runJava(className,response,callback){
+
+
+	console.log(response);
+
+	var process = require('child_process');
+
+	var options={encoding:'utf8'};
 	var astr = "";
 	var bstr = "";
 
-	var options={encoding:'utf8'};
-	var javac  = process.spawn('javac', ['Temp.java'],options);
+	var java  = process.spawn('java', [className],options);
 
-	javac.stderr.on('data', function (data) {
-	  console.log('stderr: ' + data);
-	});
-
-	javac.on('close', function (code) {
-	  console.log('child process exited with code ' + code);
-	});
-
-	console.log('Spawned child pid: ' + javac.pid);
-
-	var java  = process.spawn('java', ['Temp'],options);
-	var response = {};
-
+	console.log("data");
 	java.stdout.on('data', function(data) {
 	    astr = astr + data.toString();
 	    response.out = astr;
 	});
 
-	java.stderr.on("data", function (data) {
-		bstr = bstr + data.toString();
-		response.err = astr;
+	java.stderr.on('data', function (data) {
+			bstr = bstr + data.toString();
+			response.runtimeErr = bstr;
 	});
 
 	java.once('close', function(){
-	   callback(response);
+			   callback(response);
 	});
 
-	
 }
 
 
