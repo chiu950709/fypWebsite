@@ -12,7 +12,7 @@ router.get('/', function(req, res, next) {
 
 
 //find/search
-router.get('/testing/:scope', function(req, res){
+router.get('/exmaquestion/:scope', function(req, res){
 	var searchingCriteria = {};
 	searchingCriteria.Scope = req.params.scope;
 	search(searchingCriteria, function(result){
