@@ -132,12 +132,12 @@ async function compileJava(className,callback){
 	var javac  = process.spawn('javac', [className+'.java'],options);
 
 	javac.stderr.on('data', function (data) {
-	if(data.toString().indexOf("Picked up JAVA_TOOL_OPTIONS" != -1)){
-		console.log("compileErr : " + data.toString());
-		}else{
-		  bstr = bstr + data.toString();
-		  response.compileErr = bstr;
-		}
+	//if(data.toString().indexOf("Picked up JAVA_TOOL_OPTIONS" != -1)){
+		//console.log("compileErr : " + data.toString());
+	var aStr = data.toString();
+	aStr.substring(aStr.indexOf("\n"),aStr.length - 1);
+	bstr = bstr + aStr;
+	response.compileErr = bstr;
 	});
 
 
