@@ -103,13 +103,13 @@ router.post('/compile', function(req, res){
 function compile_temp(className,callback){
 	console.log("compileJava()");
 	compileJava(className,function(response){
-		if(response.compileErr == undefined){
+		//if(response.compileErr == undefined){
 			runJava(className,response,function(response){
 			callback(response);
-			})
-		}else{
+		//	})
+		//}else{
 			callback(response);
-		}
+		//}
 	});
 
 }
