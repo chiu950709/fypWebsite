@@ -106,9 +106,9 @@ function compile_temp(className,callback){
 		//if(response.compileErr == undefined){
 			runJava(className,response,function(response){
 			callback(response);
-		//	})
+			})
 		//}else{
-			callback(response);
+			//callback(response);
 		//}
 	});
 
