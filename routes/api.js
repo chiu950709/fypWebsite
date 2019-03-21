@@ -133,6 +133,7 @@ async function compileJava(className,callback){
 
 	javac.stderr.on('data', function (data) {
 	if(data.toString().indexOf("Picked up JAVA_TOOL_OPTIONS" != -1)){
+		console.log("compileErr : " + data.toString());
 		}else{
 		  bstr = bstr + data.toString();
 		  response.compileErr = bstr;
