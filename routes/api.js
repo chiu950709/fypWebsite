@@ -134,14 +134,14 @@ async function compileJava(className,callback){
 	var skipFirstLine = true;
 
 	javac.stderr.on('data', function (data) {
-		
-		console.log("skip : " + skipFirstLine + "");
-		if(skipFirstLine == true){
-			skipFirstLine == false;
-		}else{
+
+		//console.log("skip : " + skipFirstLine + "");
+		//if(skipFirstLine == true){
+		//	skipFirstLine == false;
+		//}else{
 		  bstr = bstr + data.toString();
 		  response.compileErr = bstr;
-		}
+		//}
 	});
 
 
@@ -168,13 +168,12 @@ async function runJava(className,response,callback){
 	});
 
 	java.stderr.on('data', function (data) {
-		console.log("skip : " + skipFirstLine + "");
-		if(skipFirstLine == true){
-			skipFirstLine == false;
-		}else{
+		//(skipFirstLine == true){
+			//skipFirstLine == false;
+		//}else{
 			bstr = bstr + data.toString();
 			response.runtimeErr = bstr;
-		}
+		//}
 	});
 
 	java.once('close', function(){
