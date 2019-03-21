@@ -102,6 +102,10 @@ router.post('/compile', function(req, res){
 function compile_temp(className,callback){
 	console.log("compileJava()");
 	compileJava(className,function(response){
+		var jvm = "Picked up JAVA_TOOL_OPTIONS: -Xmx300m -Xss512k -XX:CICompilerCount=2 -Dfile.encoding=UTF-8 \n";
+		if(response.compileErr.indexOf(jvm) != -1 &&  response.compileErr.length == jvm.length){
+			response.compileErr = undefined;
+		}
 		if(response.compileErr == undefined){
 			runJava(className,response,function(response){
 			callback(response);
@@ -132,13 +136,8 @@ async function compileJava(className,callback){
 	var javac  = process.spawn('javac', [className+'.java'],options);
 
 	javac.stderr.on('data', function (data) {
-	//if(data.toString().indexOf("Picked up JAVA_TOOL_OPTIONS" != -1)){
-		//console.log("compileErr : " + data.toString());
-	var aStr = data.toString();
-	console.log(aStr);
-	aStr = aStr.substring(aStr.indexOf("\n"),aStr.length - 1);
-	bstr = bstr + aStr;
-	response.compileErr = bstr;
+		  bstr = bstr + data.toString();
+		  response.compileErr = bstr;
 	});
 
 
