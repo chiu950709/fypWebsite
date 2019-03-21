@@ -103,6 +103,7 @@ router.post('/compile', function(req, res){
 function compile_temp(className,callback){
 	console.log("compileJava()");
 	compileJava(className,function(response){
+		console.log("response.compileErr : " + response.compileErr);
 		if(response.compileErr == undefined){
 			runJava(className,response,function(response){
 			callback(response);
@@ -132,9 +133,7 @@ async function compileJava(className,callback){
 	var javac  = process.spawn('javac', [className+'.java'],options);
 
 	javac.stderr.on('data', function (data) {
-		console.log(data.toString());
 	if(data.toString().indexOf("Picked up JAVA_TOOL_OPTIONS" != -1)){
-		console.log("CompileJava() Skiped");
 		}else{
 		  bstr = bstr + data.toString();
 		  response.compileErr = bstr;
@@ -164,9 +163,7 @@ async function runJava(className,response,callback){
 	});
 
 	java.stderr.on('data', function (data) {
-		console.log(data.toString());
 	if(data.toString().indexOf("Picked up JAVA_TOOL_OPTIONS") != -1){
-		console.log("CompileJava() Skiped");
 		}else{
 			bstr = bstr + data.toString();
 			response.runtimeErr = bstr;
