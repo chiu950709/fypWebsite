@@ -85,7 +85,6 @@ router.post('/compile', function(req, res){
 			  console.log('File Saved as ' + class_name+'.java');
 			  compile_temp(class_name ,function(response){
 			  	console.log(response);
-			  	console.log("hi123");
 				res.setHeader("content-type","application/json");
 				res.send(response);
 				removeFile(class_name);
@@ -104,10 +103,8 @@ router.post('/compile', function(req, res){
 function compile_temp(className,callback){
 	console.log("compileJava()");
 	compileJava(className,function(response){
-		console.log("runJava()" );
 		if(response.compileErr == undefined){
 			runJava(className,response,function(response){
-			console.log("After runJava() ");
 			callback(response);
 			})
 		}else{
@@ -149,9 +146,6 @@ async function compileJava(className,callback){
 
 async function runJava(className,response,callback){
 
-
-	console.log(response);
-
 	var process = require('child_process');
 
 	var options={encoding:'utf8'};
@@ -160,7 +154,6 @@ async function runJava(className,response,callback){
 
 	var java  = process.spawn('java', [className],options);
 
-	console.log("data");
 	java.stdout.on('data', function(data) {
 	    astr = astr + data.toString();
 	    response.out = astr;
