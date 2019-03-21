@@ -131,17 +131,15 @@ async function compileJava(className,callback){
 
 	var options={encoding:'utf8'};
 	var javac  = process.spawn('javac', [className+'.java'],options);
-	var skipFirstLine = true;
 
 	javac.stderr.on('data', function (data) {
 
-		//console.log("skip : " + skipFirstLine + "");
-		//if(skipFirstLine == true){
-		//	skipFirstLine == false;
-		//}else{
+		
+	if(data.toString().indexOf("Picked up JAVA_TOOL_OPTIONS: -Xmx300m -Xss512k -XX:CICompilerCount=2 -Dfile.encoding=UTF-8")){
+		}else{
 		  bstr = bstr + data.toString();
 		  response.compileErr = bstr;
-		//}
+		}
 	});
 
 
@@ -158,7 +156,6 @@ async function runJava(className,response,callback){
 	var options={encoding:'utf8'};
 	var astr = "";
 	var bstr = "";
-	var skipFirstLine = true;
 
 	var java  = process.spawn('java', [className],options);
 
@@ -168,12 +165,11 @@ async function runJava(className,response,callback){
 	});
 
 	java.stderr.on('data', function (data) {
-		//(skipFirstLine == true){
-			//skipFirstLine == false;
-		//}else{
+		if(data.toString().indexOf("Picked up JAVA_TOOL_OPTIONS: -Xmx300m -Xss512k -XX:CICompilerCount=2 -Dfile.encoding=UTF-8")){
+		}else{
 			bstr = bstr + data.toString();
 			response.runtimeErr = bstr;
-		//}
+		}
 	});
 
 	java.once('close', function(){
