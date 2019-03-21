@@ -147,6 +147,7 @@ async function compileJava(className,callback){
 }
 
 async function runJava(className,response,callback){
+	console.log("runJava()");
 
 	var process = require('child_process');
 
@@ -170,7 +171,7 @@ async function runJava(className,response,callback){
 	});
 
 	java.once('close', function(){
-			   callback(response);
+		callback(response);
 	});
 
 }
