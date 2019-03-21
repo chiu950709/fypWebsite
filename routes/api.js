@@ -134,6 +134,8 @@ async function compileJava(className,callback){
 	var skipFirstLine = true;
 
 	javac.stderr.on('data', function (data) {
+		
+		console.log("skip : " + skipFirstLine + "");
 		if(skipFirstLine == true){
 			skipFirstLine == false;
 		}else{
@@ -166,6 +168,7 @@ async function runJava(className,response,callback){
 	});
 
 	java.stderr.on('data', function (data) {
+		console.log("skip : " + skipFirstLine + "");
 		if(skipFirstLine == true){
 			skipFirstLine == false;
 		}else{
