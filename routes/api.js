@@ -133,7 +133,7 @@ async function compileJava(className,callback){
 
 	javac.stderr.on('data', function (data) {
 		console.log(data.toString());
-	if(data.toString().indexOf("Picked up JAVA_TOOL_OPTIONS")){
+	if(data.toString().indexOf("Picked up JAVA_TOOL_OPTIONS" != -1)){
 		console.log("CompileJava() Skiped");
 		}else{
 		  bstr = bstr + data.toString();
@@ -165,7 +165,7 @@ async function runJava(className,response,callback){
 
 	java.stderr.on('data', function (data) {
 		console.log(data.toString());
-	if(data.toString().indexOf("Picked up JAVA_TOOL_OPTIONS")){
+	if(data.toString().indexOf("Picked up JAVA_TOOL_OPTIONS") != -1){
 		console.log("CompileJava() Skiped");
 		}else{
 			bstr = bstr + data.toString();
