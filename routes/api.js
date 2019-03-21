@@ -135,7 +135,7 @@ async function compileJava(className,callback){
 	//if(data.toString().indexOf("Picked up JAVA_TOOL_OPTIONS" != -1)){
 		//console.log("compileErr : " + data.toString());
 	var aStr = data.toString();
-	aStr.substring(aStr.indexOf("\n"),aStr.length - 1);
+	aStr = aStr.substring(aStr.indexOf("\n"),aStr.length - 1);
 	bstr = bstr + aStr;
 	response.compileErr = bstr;
 	});
