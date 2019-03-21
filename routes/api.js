@@ -120,7 +120,6 @@ function removeFile(fileName){
 	var filePath = process.cwd() + "/" + fileName;
 	console.log(filePath);
 	//fs.unlink
-
 }
 
 async function compileJava(className,callback){
@@ -133,9 +132,9 @@ async function compileJava(className,callback){
 	var javac  = process.spawn('javac', [className+'.java'],options);
 
 	javac.stderr.on('data', function (data) {
-
-		
+		console.log(data.toString());
 	if(data.toString().indexOf("Picked up JAVA_TOOL_OPTIONS: -Xmx300m -Xss512k -XX:CICompilerCount=2 -Dfile.encoding=UTF-8")){
+		console.log("CompileJava() Skiped");
 		}else{
 		  bstr = bstr + data.toString();
 		  response.compileErr = bstr;
@@ -165,7 +164,9 @@ async function runJava(className,response,callback){
 	});
 
 	java.stderr.on('data', function (data) {
-		if(data.toString().indexOf("Picked up JAVA_TOOL_OPTIONS: -Xmx300m -Xss512k -XX:CICompilerCount=2 -Dfile.encoding=UTF-8")){
+		console.log(data.toString());
+	if(data.toString().indexOf("Picked up JAVA_TOOL_OPTIONS: -Xmx300m -Xss512k -XX:CICompilerCount=2 -Dfile.encoding=UTF-8")){
+		console.log("CompileJava() Skiped");
 		}else{
 			bstr = bstr + data.toString();
 			response.runtimeErr = bstr;
