@@ -84,7 +84,6 @@ router.post('/compile', function(req, res){
 			  if (err) throw err;
 			  console.log('File Saved as ' + class_name+'.java');
 			  compile_temp(class_name ,function(response){
-			  	console.log(response);
 				res.setHeader("content-type","application/json");
 				res.send(response);
 				removeFile(class_name);
@@ -103,12 +102,12 @@ router.post('/compile', function(req, res){
 function compile_temp(className,callback){
 	console.log("compileJava()");
 	compileJava(className,function(response){
-		console.log("response.compileErr : " + response.compileErr);
 		if(response.compileErr == undefined){
 			runJava(className,response,function(response){
 			callback(response);
 			})
 		}else{
+			console.log(response);
 			callback(response);
 		}
 	});
