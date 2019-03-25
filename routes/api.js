@@ -67,17 +67,28 @@ router.post('/compile', function(req, res){
 	
 	if(index1 != -1){
 
-		var index2 = code.indexOf(" ",index1);
-		var index3 = code.indexOf("{",index1);
+		var index2 = code.indexOf("{",index1-1);
+		//var index3 = code.indexOf(" ",index1-1);
 		var class_name;
 
 		if(index2 != -1){
 			class_name = code.substring(index1,index2);
+			
+			console.log(class_name);
+			var index3 = class_name.indexOf(" ");
+			if(index3 != -1){
+				class_name = class_name.substring(0,index3);
+			}
+			var index4 = class_name.indexOf("\t");
+			if(index4 != -1){
+				class_name = class_name.substring(0,index4);
+			}
 			respondfail = false;
-		}else if(index3 != -1){
+		}	
+		/*else if(index3 != -1){
 			class_name = code.substring(index1,index3);
 			respondfail = false;
-		}
+		}*/
 		
 		if(respondfail == false){
 			fs.writeFile(class_name + '.java', code, function (err) {
@@ -103,8 +114,10 @@ function compile_temp(className,callback){
 	console.log("compileJava()");
 	compileJava(className,function(response){
 		var jvm = "Picked up JAVA_TOOL_OPTIONS: -Xmx300m -Xss512k -XX:CICompilerCount=2 -Dfile.encoding=UTF-8 \n";
-		if(response.compileErr.indexOf(jvm) != -1 &&  response.compileErr.length == jvm.length){
-			response.compileErr = undefined;
+		if(response.compileErr != undefined){
+			if(response.compileErr.indexOf(jvm) != -1 &&  response.compileErr.length == jvm.length){
+				response.compileErr = undefined;
+			}
 		}
 		if(response.compileErr == undefined){
 			runJava(className,response,function(response){
