@@ -57,6 +57,93 @@ function insert(query, callback){
 	});
 }
 
+///////////////////////////////////////////////////////////
+//findTemplate
+router.get('/templateQuestion/:scope', function(req, res){
+	var searchingCriteria = {};
+	searchingCriteria.Scope = req.params.scope;
+	search(searchingCriteria, function(result){
+		var code = "";
+		for(var jsonLength=0; jsonLength<result.length; jsonLength++){
+			code = result[jsonLength].Demo;
+		}
+		var randomInt = Math.floor((Math.random()*50)+1);
+		code = code.replace("(randomInt)", randomInt);
+		console.log(code);
+
+		var class_identifier = ("public class ");
+		var index1 = code.indexOf(class_identifier);
+		index1 == -1 ? -1 : (index1 += class_identifier.length);
+		var respondfail = true;
+		
+		if(index1 != -1){
+
+			var index2 = code.indexOf("{",index1-1);
+			//var index3 = code.indexOf(" ",index1-1);
+			var class_name;
+
+			if(index2 != -1){
+				class_name = code.substring(index1,index2);
+				
+				console.log(class_name);
+				var index3 = class_name.indexOf(" ");
+				if(index3 != -1){
+					class_name = class_name.substring(0,index3);
+				}
+				var index4 = class_name.indexOf("\t");
+				if(index4 != -1){
+					class_name = class_name.substring(0,index4);
+				}
+				respondfail = false;
+			}	
+			/*else if(index3 != -1){
+				class_name = code.substring(index1,index3);
+				respondfail = false;
+			}*/
+			
+			if(respondfail == false){
+				fs.writeFile(class_name + '.java', code, function (err) {
+				  if (err) throw err;
+				  console.log('File Saved as ' + class_name+'.java');
+				  compile_temp(class_name ,function(response){
+					  	var aQuestion = {};
+					  	var correctAnswer = "";
+						res.setHeader("content-type","application/json");
+						//res.send(response);
+						aQuestion.QuestionTitle = code;
+						aQuestion.QuestionType = "MC";
+						correctAnswer = response.out.replace("\n","");
+						aQuestion.Answer = correctAnswer;
+						choices = [correctAnswer, Math.floor((Math.random()*50)+1).toString(), Math.floor((Math.random()*50)+1).toString(), Math.floor((Math.random()*50)+1).toString()];
+						aQuestion.Choices = choices;
+						console.log(choices[1]); 
+						console.log(response.out.replace("\n",""));
+						res.send(aQuestion);
+						removeFile(class_name);
+				  	});
+				});
+			}
+		}
+		if(respondfail){
+			var response = {};
+			response.output = 'Cannot identify class name.';
+			res.setHeader("content-type","tapplication/json");
+			res.send(response);
+		}
+
+
+	});
+});
+function search(searchingCriteria, callback){
+	mongodb.connect(url, {userNewUrlParser: true}, function(err, client){
+		console.log("Connected");
+		client.db("fyp").collection("template").find(searchingCriteria).toArray(function(err,result){
+			callback(result);
+		});
+	});
+}
+//////////////////////////////////////////////////////////////////////
+
 //compile
 router.post('/compile', function(req, res){
 	var code = req.body.code;
