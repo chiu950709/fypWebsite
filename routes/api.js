@@ -2,6 +2,10 @@ var express = require('express');
 var router = express.Router();
 var mongodb = require('mongodb').MongoClient;
 var fs = require('file-system');
+var async = require('async');
+
+//const fsp = require('fs').promises;
+
 
 var url = "mongodb+srv://dbadmin:dbadmin@cluster0-fruhy.mongodb.net/test?retryWrites=true"
 /* GET home page. */
@@ -15,12 +19,12 @@ router.get('/', function(req, res, next) {
 router.get('/examquestion/:scope', function(req, res){
 	var searchingCriteria = {};
 	searchingCriteria.Scope = req.params.scope;
-	search(searchingCriteria, function(result){
+	searchExam(searchingCriteria, function(result){
 		res.setHeader("content-type","application/json");
 		res.send(result);
 	});
 });
-function search(searchingCriteria, callback){
+function searchExam(searchingCriteria, callback){
 	mongodb.connect(url, {userNewUrlParser: true}, function(err, client){
 		console.log("Connected");
 		client.db("fyp").collection("exam").find(searchingCriteria).toArray(function(err,result){
@@ -80,24 +84,26 @@ router.get('/templateQuestion/:scope', function(req, res){
 				code = code.replace("(randomInt2)", Math.floor((Math.random()*50)+1));
 			}
 			outputAllQuestion[jsonLength] = code;
-			console.log(code);
+			//console.log(code);
 		}
 
 		//Compile the template from "outputAllQuestion" array
 		for(var compileQuestion=0; compileQuestion<outputAllQuestion.length; compileQuestion++){
 
+			var code = outputAllQuestion[compileQuestion];
+
 			var class_identifier = ("public class ");
-			var index1 = outputAllQuestion[compileQuestion].indexOf(class_identifier);
+			var index1 = code.indexOf(class_identifier);
 			index1 == -1 ? -1 : (index1 += class_identifier.length);
 			var respondfail = true;
 			
 			if(index1 != -1){
 
-				var index2 = outputAllQuestion[compileQuestion].indexOf("{",index1-1);
+				var index2 = code.indexOf("{",index1-1);
 				var class_name;
 
 				if(index2 != -1){
-					class_name = outputAllQuestion[compileQuestion].substring(index1,index2);
+					class_name = code.substring(index1,index2);
 					
 					console.log(class_name);
 					var index3 = class_name.indexOf(" ");
@@ -108,20 +114,22 @@ router.get('/templateQuestion/:scope', function(req, res){
 					if(index4 != -1){
 						class_name = class_name.substring(0,index4);
 					}
-					fs.writeFile(class_name + '.java', outputAllQuestion[compileQuestion], function (err) {
+					fs.writeFile(class_name + '.java', code, function (err) {
 					  if (err) throw err;
-					  console.log('File Saved as ' + class_name+'.java');
-					  compile_temp(class_name ,function(response){
+
+						  console.log(" Then "+compileQuestion+code);
+						  console.log('File Saved as ' + class_name+'.java');
+						  compile_temp(class_name ,function(response){
 						  	var aQuestion = {};
 						  	var correctAnswer = "";
 							//res.setHeader("content-type","application/json");						
-							aQuestion.QuestionTitle = outputAllQuestion[compileQuestion];
+							aQuestion.QuestionTitle = code;
 							aQuestion.QuestionType = "MC";
 							correctAnswer = response.out.replace("\n","");
 							aQuestion.Answer = correctAnswer;
 							choices = [correctAnswer, Math.floor((Math.random()*50)+1).toString(), Math.floor((Math.random()*50)+1).toString(), Math.floor((Math.random()*50)+1).toString()];
 							aQuestion.Choices = choices;
-							console.log(choices[1]); 
+							//console.log(choices[1]); 
 							console.log(response.out.replace("\n",""));
 							//res.send(aQuestion);
 							questionJsonArray.push(aQuestion);
@@ -200,8 +208,9 @@ router.post('/compile', function(req, res){
 	}
 });
 
-function compile_temp(className,callback){
+async function compile_temp(className,callback){
 	console.log("compileJava()");
+	
 	compileJava(className,function(response){
 		var jvm = "Picked up JAVA_TOOL_OPTIONS: -Xmx300m -Xss512k -XX:CICompilerCount=2 -Dfile.encoding=UTF-8 \n";
 		if(response.compileErr != undefined){
@@ -218,6 +227,7 @@ function compile_temp(className,callback){
 			callback(response);
 		}
 	});
+
 
 }
 
