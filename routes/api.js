@@ -21,6 +21,7 @@ router.get('/examquestion/:scope', function(req, res){
 	searchingCriteria.Scope = req.params.scope;
 	searchExam(searchingCriteria, function(result){
 		res.setHeader("content-type","application/json");
+		console.log(result[0]);
 		res.send(result);
 	});
 });
@@ -67,80 +68,18 @@ router.get('/templateQuestion/:scope', function(req, res){
 
 	var searchingCriteria = {};
 	var questionJsonArray = [];
+	var outputAllQuestion = [];
 	searchingCriteria.Scope = req.params.scope;
 
 	search(searchingCriteria, function(result){
+		
+		randomInt(result, function(outputAllQuestion){
 
-		var outputAllQuestion = [result.length];
-		var code = "";
+			compileTemp(outputAllQuestion, res);
 
-		//Read all question template and put all in "outputAllQuestion" array
-		for(var jsonLength=0; jsonLength<result.length; jsonLength++){
-			code = result[jsonLength].Demo;
-			if(code.includes("randomInt1")){
-				code = code.replace("(randomInt1)", Math.floor((Math.random()*50)+1));
-			}
-			if(code.includes("randomInt2")){
-				code = code.replace("(randomInt2)", Math.floor((Math.random()*50)+1));
-			}
-			outputAllQuestion[jsonLength] = code;
-			//console.log(code);
-		}
+		});
 
-		//Compile the template from "outputAllQuestion" array
-		for(var compileQuestion=0; compileQuestion<outputAllQuestion.length; compileQuestion++){
-
-			var code = outputAllQuestion[compileQuestion];
-
-			var class_identifier = ("public class ");
-			var index1 = code.indexOf(class_identifier);
-			index1 == -1 ? -1 : (index1 += class_identifier.length);
-			var respondfail = true;
-			
-			if(index1 != -1){
-
-				var index2 = code.indexOf("{",index1-1);
-				var class_name;
-
-				if(index2 != -1){
-					class_name = code.substring(index1,index2);
-					
-					console.log(class_name);
-					var index3 = class_name.indexOf(" ");
-					if(index3 != -1){
-						class_name = class_name.substring(0,index3);
-					}
-					var index4 = class_name.indexOf("\t");
-					if(index4 != -1){
-						class_name = class_name.substring(0,index4);
-					}
-					fs.writeFile(class_name + '.java', code, function (err) {
-					  if (err) throw err;
-
-						  console.log(" Then "+compileQuestion+code);
-						  console.log('File Saved as ' + class_name+'.java');
-						  compile_temp(class_name ,function(response){
-						  	var aQuestion = {};
-						  	var correctAnswer = "";
-							//res.setHeader("content-type","application/json");						
-							aQuestion.QuestionTitle = code;
-							aQuestion.QuestionType = "MC";
-							correctAnswer = response.out.replace("\n","");
-							aQuestion.Answer = correctAnswer;
-							choices = [correctAnswer, Math.floor((Math.random()*50)+1).toString(), Math.floor((Math.random()*50)+1).toString(), Math.floor((Math.random()*50)+1).toString()];
-							aQuestion.Choices = choices;
-							//console.log(choices[1]); 
-							console.log(response.out.replace("\n",""));
-							//res.send(aQuestion);
-							questionJsonArray.push(aQuestion);
-							removeFile(class_name);
-					  	});
-					});
-				}	
-			}
-		}
-		res.setHeader("content-type","application/json");
-		res.send(questionJsonArray);
+		
 	});
 });
 
@@ -152,6 +91,217 @@ function search(searchingCriteria, callback){
 			callback(result);
 		});
 	});
+}
+
+//Function for search 
+function randomInt(array, callback){
+	var randomStr = ["Hello World!", "Welcome to Java World!", "Hong Kong no IT!", "Come and Join us as being a IT dog!", 
+						"Every project would have a free rider groupmate and you cannot avoid him!", "Winner winner, chicken dinner",
+						"The Open University of Hong Kong", "Hope that you enjoy learning Java",
+						"How come a student can take all pass with no subject skills"];
+
+	var strType = ["indexOf(substring)", "substring(randomStrInt1, randomStrInt2)", "length", "charAt(randomStrInt1)", "contains(substring)"];
+	var outputAllQuestion = [];	
+	outputAllQuestion = [array.length];
+		var code = "";
+
+		//Read all question template and put all in "outputAllQuestion" array
+		for(var jsonLength=0; jsonLength<array.length; jsonLength++){
+
+			var forMCwithNoCompile = {};
+
+			var lengthOfStr;
+			var randStr;
+
+			var fucOfStr;
+
+			code = array[jsonLength].Demo;
+			type = array[jsonLength].Type;
+
+			//For String
+			if(code.includes("randomString1")){
+
+				var genString = Math.floor((Math.random()*90)+1);
+
+					if(genString > 80){
+
+						code = code.replace("randomString1", "\""+randomStr[8]+"\"");
+						lengthOfStr = randomStr[8].length;
+						randStr = randomStr[8];
+
+					}else if(genString > 70){
+
+						code = code.replace("randomString1", "\""+randomStr[7]+"\"");
+						lengthOfStr = randomStr[7].length;
+						randStr = randomStr[7];
+
+					}else if(genString > 60){
+
+						code = code.replace("randomString1", "\""+randomStr[6]+"\"");
+						lengthOfStr = randomStr[6].length;
+						randStr = randomStr[6];
+
+					}else if(genString > 50){
+
+						code = code.replace("randomString1", "\""+randomStr[5]+"\"");
+						lengthOfStr = randomStr[5].length;
+						randStr = randomStr[5];
+
+					}else if(genString > 40){
+
+						code = code.replace("randomString1", "\""+randomStr[4]+"\"");
+						lengthOfStr = randomStr[4].length;
+						randStr = randomStr[4];
+
+					}else if(genString > 30){
+
+						code = code.replace("randomString1", "\""+randomStr[3]+"\"");
+						lengthOfStr = randomStr[3].length;
+						randStr = randomStr[3];
+
+					}else if(genString > 20){
+
+						code = code.replace("randomString1", "\""+randomStr[2]+"\"");
+						lengthOfStr = randomStr[2].length;
+						randStr = randomStr[2];
+
+					}else if(genString > 10){
+
+						code = code.replace("randomString1", "\""+randomStr[1]+"\"");
+						lengthOfStr = randomStr[1].length;
+						randStr = randomStr[1];
+
+					}else if(genString > 0){
+
+						code = code.replace("randomString1", "\""+randomStr[0]+"\"");
+						lengthOfStr = randomStr[0].length;
+						randStr = randomStr[0];
+
+					}
+
+					if(code.includes("randomType")){
+
+						var genType = Math.floor((Math.random()*50)+1);
+
+						if(genType > 40){
+
+							var num_one = Math.floor((Math.random()*lengthOfStr));
+							var num_two = Math.floor((Math.random()*lengthOfStr));
+							var randCorrectAnswer = Math.floor((Math.random()*100)+1);
+							var previewStr;
+
+							code = code.replace("randomType", strType[4]);
+							if(randCorrectAnswer > 50){
+								if(num_one > num_two){
+									previewStr = randStr.substring(num_two, num_one);
+								}else{
+									previewStr = randStr.substring(num_one, num_two);
+								}
+							}else if(randCorrectAnswer > 0){
+								if(num_one > num_two){
+									previewStr = randomStr[Math.floor((Math.random()*8))].substring(num_two, num_one);
+								}else{
+									previewStr = randomStr[Math.floor((Math.random()*8))].substring(num_one, num_two);
+								}
+							}
+							code = code.replace("substring", previewStr);
+							array[jsonLength].Answer = randStr.includes(previewStr).toString();
+							var choices = [array[jsonLength].Answer, (!randStr.includes(previewStr)).toString()];
+							array[jsonLength].Choices = choices;
+
+						}else if(genType > 30){
+
+							var index = Math.floor((Math.random()*lengthOfStr));
+							code = code.replace("randomType", strType[3]);
+							code = code.replace("randomStrInt1", index);
+							array[jsonLength].Answer = randStr.charAt(index).toString();
+							var choices = [array[jsonLength].Answer, randStr.charAt(Math.floor((Math.random()*lengthOfStr))).toString(), randStr.charAt(Math.floor((Math.random()*lengthOfStr))).toString()];
+							array[jsonLength].Choices = choices;
+
+						}else if(genType > 20){
+
+							code = code.replace("randomType", strType[2]);
+							array[jsonLength].Answer = lengthOfStr.toString();
+							var choices = [array[jsonLength].Answer, (lengthOfStr-1).toString(), (lengthOfStr+1).toString()];
+							array[jsonLength].Choices = choices;
+
+
+						}else if(genType > 10){
+
+							code = code.replace("randomType", strType[1]);
+							var num_one = Math.floor((Math.random()*lengthOfStr));
+							var num_two = Math.floor((Math.random()*lengthOfStr));
+							if(num_one > num_two){
+								code = code.replace("randomStrInt1", num_two);
+								code = code.replace("randomStrInt2", num_one);
+								array[jsonLength].Answer = randStr.substring(num_two, num_one);
+								var choices = [array[jsonLength].Answer.toString(), randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length))).toString(),
+								randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length))).toString(),
+								randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length))).toString()];
+								array[jsonLength].Choices = choices;
+
+							}else{
+								code = code.replace("randomStrInt1", num_one);
+								code = code.replace("randomStrInt2", num_two);
+								array[jsonLength].Answer = randStr.substring(num_one, num_two);
+								var choices = [array[jsonLength].Answer.toString(), randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length))).toString(),
+								randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length))).toString(),
+								randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length))).toString()];
+								array[jsonLength].Choices = choices;
+							}
+
+
+						}else if(genType > 0){
+
+							var num_one = Math.floor((Math.random()*lengthOfStr));
+							var num_two = Math.floor((Math.random()*lengthOfStr));
+							var previewStr;
+
+							code = code.replace("randomType", strType[4]);
+							if(num_one > num_two){
+								previewStr = randStr.substring(num_two, num_one);
+							}else{
+								previewStr = randStr.substring(num_one, num_two);
+							}
+							code = code.replace("substring", previewStr);
+
+							array[jsonLength].Answer = randStr.indexOf(previewStr).toString();
+							var choices = [array[jsonLength].Answer.toString(), randomStr[Math.floor((Math.random()*8))].indexOf(randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)))).toString(),
+							randomStr[Math.floor((Math.random()*8))].indexOf(randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)))).toString(), 
+							randomStr[Math.floor((Math.random()*8))].indexOf(randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)))).toString()];
+							array[jsonLength].Choices = choices;
+
+						}
+					}
+			}
+
+
+			//For Calculation
+			if(code.includes("randomInt1") && type == "MC"){
+				code = code.replace("(randomInt1)", Math.floor((Math.random()*50)+1));
+			}
+			if(code.includes("randomInt2") && type == "MC"){
+				code = code.replace("(randomInt2)", Math.floor((Math.random()*50)+1));
+			}
+			if(code.includes("randomInt3") && type == "MC"){
+				code = code.replace("(randomInt3)", Math.floor((Math.random()*50)+1));
+			}
+			if(code.includes("randomInt4") && type == "MC"){
+				code = code.replace("(randomInt4)", Math.floor((Math.random()*50)+1));
+			}
+			if(code.includes("randomDouble1") && type == "MC"){
+				code = code.replace("(randomDouble1)", Math.round(((Math.random()*50)+1) * 100)/100);
+			}
+			if(code.includes("randomDouble2") && type == "MC"){
+				code = code.replace("(randomDouble2)", Math.round(((Math.random()*50)+1) * 100)/100);
+			}
+			
+			array[jsonLength].Demo = code;
+			//console.log(code);
+		}
+	console.log(array);
+	callback(array);
+
 }
 //////////////////////////////////////////////////////////////////////
 
@@ -208,6 +358,7 @@ router.post('/compile', function(req, res){
 	}
 });
 
+/////////////////////////////////////////////////////////
 async function compile_temp(className,callback){
 	console.log("compileJava()");
 	
@@ -288,6 +439,106 @@ async function runJava(className,response,callback){
 		callback(response);
 	});
 
+}
+
+
+///////////////////////////////////////////////////
+async function compileTemp(array, res){
+
+	var questionJson = [];
+	var questionNumber = 0;
+
+
+	for(const item of array){
+		questionNumber += 1;
+		if(!item.Demo.includes("public")){						
+			await forNoneCompile(item, questionNumber, function(result){
+				questionJson.push(result);
+				if(questionJson.length == array.length){
+					res.setHeader("content-type","application/json");
+					res.send(questionJson);
+				}			
+			});	
+
+
+		}else{
+
+			await writeProgram(item, questionNumber, function(result){
+				questionJson.push(result);
+				if(questionJson.length == array.length){
+					res.setHeader("content-type","application/json");
+					res.send(questionJson);
+				}			
+			});	
+		}		
+	}
+
+}
+async function forNoneCompile(item, questionNumber, callback){
+	await delay();
+	var notNeedComplete = {};
+	notNeedComplete.QuestionNumber = questionNumber;
+	notNeedComplete.QuestionTitle = item.Demo;
+	notNeedComplete.Answer = item.Answer;
+	notNeedComplete.Choices = item.Choices;
+	notNeedComplete.QuestionType = "MC";
+	callback(notNeedComplete);
+}
+
+async function writeProgram(item, questionNumber, callback){
+	await delay();
+	var code = item.Demo;
+			//console.log(code);
+			var class_identifier = ("public class ");
+			var index1 = code.indexOf(class_identifier);
+			index1 == -1 ? -1 : (index1 += class_identifier.length);
+			var respondfail = true;
+			
+			if(index1 != -1){
+
+				var index2 = code.indexOf("{",index1-1);
+				var class_name;
+
+				if(index2 != -1){
+					class_name = code.substring(index1,index2);
+					
+					console.log(class_name);
+					var index3 = class_name.indexOf(" ");
+					if(index3 != -1){
+						class_name = class_name.substring(0,index3);
+					}
+					var index4 = class_name.indexOf("\t");
+					if(index4 != -1){
+						class_name = class_name.substring(0,index4);
+					}
+
+					fs.writeFile(class_name + '.java', code, function (err) {
+					  if (err) throw err;
+
+						  compile_temp(class_name ,function(response){
+						  	var aQuestion = {};
+						  	var correctAnswer = "";
+							aQuestion.QuestionNumber = questionNumber;				
+							aQuestion.QuestionTitle = code;
+							aQuestion.QuestionType = "MC";
+							correctAnswer = response.out.replace("\n","");
+							aQuestion.Answer = correctAnswer;
+							if(code.includes("double")){
+								choices = [correctAnswer, (Math.round(((Math.random()*50)+1) * 100)/100).toString(), (Math.round(((Math.random()*50)+1) * 100)/100).toString(), (Math.round(((Math.random()*50)+1) * 100)/100).toString()];
+							}else{
+								choices = [correctAnswer, Math.floor((Math.random()*50)+1).toString(), Math.floor((Math.random()*50)+1).toString(), Math.floor((Math.random()*50)+1).toString()];
+							}
+							aQuestion.Choices = choices;
+							callback(aQuestion);
+							removeFile(class_name);
+					  	});
+					});
+				}	
+			}
+
+}
+function delay() {
+  return new Promise(resolve => setTimeout(resolve, 300));
 }
 
 
