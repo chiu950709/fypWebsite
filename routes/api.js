@@ -206,8 +206,14 @@ function randomInt(array, callback){
 							}
 							code = code.replace("substring", previewStr);
 							array[jsonLength].Answer = randStr.includes(previewStr).toString();
-							var choices = [array[jsonLength].Answer, (!randStr.includes(previewStr)).toString()];
-							array[jsonLength].Choices = choices;
+							
+							if(type == "MCwithNoCompile"){
+								var choices = [array[jsonLength].Answer, (!randStr.includes(previewStr)).toString()];
+								array[jsonLength].Choices = choices;
+								array[jsonLength].QuestionType = "MC";
+							}else{
+								array[jsonLength].QuestionType = "FillIn";
+							}
 
 						}else if(genType > 30){
 
@@ -215,15 +221,29 @@ function randomInt(array, callback){
 							code = code.replace("randomType", strType[3]);
 							code = code.replace("randomStrInt1", index);
 							array[jsonLength].Answer = randStr.charAt(index).toString();
-							var choices = [array[jsonLength].Answer, randStr.charAt(Math.floor((Math.random()*lengthOfStr))).toString(), randStr.charAt(Math.floor((Math.random()*lengthOfStr))).toString()];
-							array[jsonLength].Choices = choices;
+
+							if(type == "MCwithNoCompile"){
+								var choices = [array[jsonLength].Answer, randStr.charAt(Math.floor((Math.random()*lengthOfStr))).toString(), randStr.charAt(Math.floor((Math.random()*lengthOfStr))).toString()];
+								array[jsonLength].Choices = choices;
+								array[jsonLength].QuestionType = "MC";
+							}else{
+								array[jsonLength].QuestionType = "FillIn";
+							}
+
 
 						}else if(genType > 20){
 
 							code = code.replace("randomType", strType[2]);
 							array[jsonLength].Answer = lengthOfStr.toString();
-							var choices = [array[jsonLength].Answer, (lengthOfStr-1).toString(), (lengthOfStr+1).toString()];
-							array[jsonLength].Choices = choices;
+
+							if(type == "MCwithNoCompile"){
+								var choices = [array[jsonLength].Answer, (lengthOfStr-1).toString(), (lengthOfStr+1).toString()];
+								array[jsonLength].Choices = choices;
+								array[jsonLength].QuestionType = "MC";
+							}else{
+								array[jsonLength].QuestionType = "FillIn";
+							}
+
 
 
 						}else if(genType > 10){
@@ -235,19 +255,33 @@ function randomInt(array, callback){
 								code = code.replace("randomStrInt1", num_two);
 								code = code.replace("randomStrInt2", num_one);
 								array[jsonLength].Answer = randStr.substring(num_two, num_one);
-								var choices = [array[jsonLength].Answer.toString(), randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length))).toString(),
-								randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length))).toString(),
-								randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length))).toString()];
-								array[jsonLength].Choices = choices;
+								
+								if(type == "MCwithNoCompile"){
+									var choices = [array[jsonLength].Answer.toString(), randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length))).toString(),
+									randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length))).toString(),
+									randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length))).toString()];
+									array[jsonLength].Choices = choices;
+									array[jsonLength].QuestionType = "MC";
+								}else{
+									array[jsonLength].QuestionType = "FillIn";
+								}
+
 
 							}else{
 								code = code.replace("randomStrInt1", num_one);
 								code = code.replace("randomStrInt2", num_two);
 								array[jsonLength].Answer = randStr.substring(num_one, num_two);
-								var choices = [array[jsonLength].Answer.toString(), randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length))).toString(),
-								randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length))).toString(),
-								randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length))).toString()];
-								array[jsonLength].Choices = choices;
+								
+								if(type == "MCwithNoCompile"){
+									var choices = [array[jsonLength].Answer.toString(), randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length))).toString(),
+									randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length))).toString(),
+									randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length))).toString()];
+									array[jsonLength].Choices = choices;
+									array[jsonLength].QuestionType = "MC";
+
+								}else{
+									array[jsonLength].QuestionType = "FillIn";
+								}
 							}
 
 
@@ -266,10 +300,17 @@ function randomInt(array, callback){
 							code = code.replace("substring", previewStr);
 
 							array[jsonLength].Answer = randStr.indexOf(previewStr).toString();
-							var choices = [array[jsonLength].Answer.toString(), randomStr[Math.floor((Math.random()*8))].indexOf(randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)))).toString(),
-							randomStr[Math.floor((Math.random()*8))].indexOf(randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)))).toString(), 
-							randomStr[Math.floor((Math.random()*8))].indexOf(randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)))).toString()];
-							array[jsonLength].Choices = choices;
+							
+							if(type == "MCwithNoCompile"){
+								var choices = [array[jsonLength].Answer.toString(), randomStr[Math.floor((Math.random()*8))].indexOf(randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)))).toString(),
+								randomStr[Math.floor((Math.random()*8))].indexOf(randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)))).toString(), 
+								randomStr[Math.floor((Math.random()*8))].indexOf(randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)))).toString()];
+								array[jsonLength].Choices = choices;
+								array[jsonLength].QuestionType = "MC";
+							}else{
+								array[jsonLength].QuestionType = "FillIn";
+							}
+
 
 						}
 					}
@@ -277,22 +318,22 @@ function randomInt(array, callback){
 
 
 			//For Calculation
-			if(code.includes("randomInt1") && type == "MC"){
+			if(code.includes("randomInt1")){
 				code = code.replace("(randomInt1)", Math.floor((Math.random()*50)+1));
 			}
-			if(code.includes("randomInt2") && type == "MC"){
+			if(code.includes("randomInt2")){
 				code = code.replace("(randomInt2)", Math.floor((Math.random()*50)+1));
 			}
-			if(code.includes("randomInt3") && type == "MC"){
+			if(code.includes("randomInt3")){
 				code = code.replace("(randomInt3)", Math.floor((Math.random()*50)+1));
 			}
-			if(code.includes("randomInt4") && type == "MC"){
+			if(code.includes("randomInt4")){
 				code = code.replace("(randomInt4)", Math.floor((Math.random()*50)+1));
 			}
-			if(code.includes("randomDouble1") && type == "MC"){
+			if(code.includes("randomDouble1")){
 				code = code.replace("(randomDouble1)", Math.round(((Math.random()*50)+1) * 100)/100);
 			}
-			if(code.includes("randomDouble2") && type == "MC"){
+			if(code.includes("randomDouble2")){
 				code = code.replace("(randomDouble2)", Math.round(((Math.random()*50)+1) * 100)/100);
 			}
 			
@@ -480,15 +521,19 @@ async function forNoneCompile(item, questionNumber, callback){
 	notNeedComplete.QuestionNumber = questionNumber;
 	notNeedComplete.QuestionTitle = item.Demo;
 	notNeedComplete.Answer = item.Answer;
-	notNeedComplete.Choices = item.Choices;
-	notNeedComplete.QuestionType = "MC";
+	if(item.QuestionType == "MC"){
+		notNeedComplete.Choices = item.Choices;
+		notNeedComplete.QuestionType = "MC";
+	}else{
+		notNeedComplete.QuestionType = "FillIn";
+	}
 	callback(notNeedComplete);
 }
 
 async function writeProgram(item, questionNumber, callback){
 	await delay();
-	var code = item.Demo;
-			//console.log(code);
+			var code = item.Demo;
+			var type = item.Type;
 			var class_identifier = ("public class ");
 			var index1 = code.indexOf(class_identifier);
 			index1 == -1 ? -1 : (index1 += class_identifier.length);
@@ -520,15 +565,19 @@ async function writeProgram(item, questionNumber, callback){
 						  	var correctAnswer = "";
 							aQuestion.QuestionNumber = questionNumber;				
 							aQuestion.QuestionTitle = code;
-							aQuestion.QuestionType = "MC";
 							correctAnswer = response.out.replace("\n","");
 							aQuestion.Answer = correctAnswer;
-							if(code.includes("double")){
-								choices = [correctAnswer, (Math.round(((Math.random()*50)+1) * 100)/100).toString(), (Math.round(((Math.random()*50)+1) * 100)/100).toString(), (Math.round(((Math.random()*50)+1) * 100)/100).toString()];
+							if(type == "MC"){
+								if(code.includes("double")){
+									choices = [correctAnswer, (Math.round(((Math.random()*50)+1) * 100)/100).toString(), (Math.round(((Math.random()*50)+1) * 100)/100).toString(), (Math.round(((Math.random()*50)+1) * 100)/100).toString()];
+								}else{
+									choices = [correctAnswer, Math.floor((Math.random()*50)+1).toString(), Math.floor((Math.random()*50)+1).toString(), Math.floor((Math.random()*50)+1).toString()];
+								}
+								aQuestion.QuestionType = "MC";
+								aQuestion.Choices = choices;
 							}else{
-								choices = [correctAnswer, Math.floor((Math.random()*50)+1).toString(), Math.floor((Math.random()*50)+1).toString(), Math.floor((Math.random()*50)+1).toString()];
+								aQuestion.QuestionType = "FillIn";
 							}
-							aQuestion.Choices = choices;
 							callback(aQuestion);
 							removeFile(class_name);
 					  	});
