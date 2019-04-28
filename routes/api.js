@@ -336,6 +336,12 @@ function randomInt(array, callback){
 			if(code.includes("randomDouble2")){
 				code = code.replace("(randomDouble2)", Math.round(((Math.random()*50)+1) * 100)/100);
 			}
+			if(code.includes("randomDouble3")){
+				code = code.replace("(randomDouble3)", Math.round(((Math.random()*50)+1) * 100)/100);
+			}
+			if(code.includes("randomDouble4")){
+				code = code.replace("(randomDouble4)", Math.round(((Math.random()*50)+1) * 100)/100);
+			}
 			
 			array[jsonLength].Demo = code;
 			//console.log(code);
