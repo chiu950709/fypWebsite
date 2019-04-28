@@ -3,6 +3,7 @@ var router = express.Router();
 var mongodb = require('mongodb').MongoClient;
 var fs = require('file-system');
 var async = require('async');
+var ObjectId = require('mongodb').ObjectID;
 
 //const fsp = require('fs').promises;
 
@@ -13,7 +14,108 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
+//////////////////////////////////////////////////////////////////
+//Forum api
 
+//Search All Post
+router.get('/viewpost', function(req, res){
+	searchPost(function(result){
+		res.setHeader("content-type","application/json");
+		res.send(result);
+	});
+});
+function searchPost(callback){
+	mongodb.connect(url, {userNewUrlParser: true}, function(err, client){
+		console.log("Connected");
+		client.db("fyp").collection("forum_post").find({}).toArray(function(err,result){
+			callback(result);
+		});
+	});
+}
+
+//Search Individual Post
+router.get('/viewpost/:postid', function(req, res){
+	var searchingCriteria = {};
+	searchingCriteria._id = ObjectId(req.params.postid);
+	searchIsoPost(searchingCriteria, function(result){
+		res.setHeader("content-type","application/json");
+		res.send(result);
+	});
+});
+function searchIsoPost(searchingCriteria, callback){
+	mongodb.connect(url, {userNewUrlParser: true}, function(err, client){
+		console.log("Connected");
+		client.db("fyp").collection("forum_post").findOne(searchingCriteria, function(err,result){
+			callback(result);
+		});
+	});
+}
+
+//Create Post
+router.post('/post', function(req, res){
+	var query = {};
+	query.name = req.body.name;
+	query.userId = req.body.userId;
+	query.title = req.body.title;
+	query.content = req.body.content;
+	query.date = new Date().toDateString();
+	query.comment = [];
+	createPost(query, function(result){
+		var response = {};
+		if(result){
+			response.status = 'ok';
+			res.setHeader("content-type","application/json");
+			res.send(response);
+		}else{
+			response.status = 'fail';
+			res.setHeader("content-type","application/json");
+			res.send(response);
+		}
+	});
+});
+function createPost(query, callback){
+	mongodb.connect(url, function(err, client){
+		console.log("Connected");
+		client.db("fyp").collection("forum_post").insertOne(query, function(err,result){
+			callback(result);
+		});
+	});
+}
+
+//Comment a Post
+router.put('/viewpost/:postid/comment', function(req, res){
+	var searchingCriteria = {};
+	searchingCriteria._id = ObjectId(req.params.postid);
+
+	var query = {};
+	query.name = req.body.name;
+	query.userId = req.body.userId;
+	query.content = req.body.content;
+	query.date = new Date().toDateString();
+
+	commentForPost(searchingCriteria, query, function(result){
+		if(result){
+			response.status = 'Comment Successful';
+			res.setHeader("content-type","application/json");
+			res.send(response);
+		}else{
+			response.status = 'Comment Unsuccessful';
+			res.setHeader("content-type","application/json");
+			res.send(response);
+		}
+	});
+});
+function commentForPost(searchingCriteria, query, callback){
+	mongodb.connect(url, function(err, client){
+		console.log("Connected");
+		client.db("fyp").collection("forum_post").update(searchingCriteria, {$push: {comment: query}}, function(err,result){
+			callback(result);
+		});
+	});
+}
+
+
+///////////////////////////////////////////////////////////////////
 
 //find/search
 router.get('/examquestion/:scope', function(req, res){
@@ -21,7 +123,6 @@ router.get('/examquestion/:scope', function(req, res){
 	searchingCriteria.Scope = req.params.scope;
 	searchExam(searchingCriteria, function(result){
 		res.setHeader("content-type","application/json");
-		console.log(result[0]);
 		res.send(result);
 	});
 });
