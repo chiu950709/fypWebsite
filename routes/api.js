@@ -221,63 +221,25 @@ function randomInt(array, callback){
 
 			//For String
 			if(code.includes("randomString1")){
+				
+				var string_num = Math.floor((Math.random()*(randomStr.length-1)));
+				code = code.replace("randomString1", "\""+randomStr[string_num]+"\"");
+				lengthOfStr = randomStr[string_num].length;
+				randStr = randomStr[string_num];	
 
-				var genString = Math.floor((Math.random()*90)+1);
-
-					if(genString > 80){
-
-						code = code.replace("randomString1", "\""+randomStr[8]+"\"");
-						lengthOfStr = randomStr[8].length;
-						randStr = randomStr[8];
-
-					}else if(genString > 70){
-
-						code = code.replace("randomString1", "\""+randomStr[7]+"\"");
-						lengthOfStr = randomStr[7].length;
-						randStr = randomStr[7];
-
-					}else if(genString > 60){
-
-						code = code.replace("randomString1", "\""+randomStr[6]+"\"");
-						lengthOfStr = randomStr[6].length;
-						randStr = randomStr[6];
-
-					}else if(genString > 50){
-
-						code = code.replace("randomString1", "\""+randomStr[5]+"\"");
-						lengthOfStr = randomStr[5].length;
-						randStr = randomStr[5];
-
-					}else if(genString > 40){
-
-						code = code.replace("randomString1", "\""+randomStr[4]+"\"");
-						lengthOfStr = randomStr[4].length;
-						randStr = randomStr[4];
-
-					}else if(genString > 30){
-
-						code = code.replace("randomString1", "\""+randomStr[3]+"\"");
-						lengthOfStr = randomStr[3].length;
-						randStr = randomStr[3];
-
-					}else if(genString > 20){
-
-						code = code.replace("randomString1", "\""+randomStr[2]+"\"");
-						lengthOfStr = randomStr[2].length;
-						randStr = randomStr[2];
-
-					}else if(genString > 10){
-
-						code = code.replace("randomString1", "\""+randomStr[1]+"\"");
-						lengthOfStr = randomStr[1].length;
-						randStr = randomStr[1];
-
-					}else if(genString > 0){
-
-						code = code.replace("randomString1", "\""+randomStr[0]+"\"");
-						lengthOfStr = randomStr[0].length;
-						randStr = randomStr[0];
-
+					//For selfSubString and substring
+					if(code.includes("selfSubString")){
+						var num_one = Math.floor((Math.random()*lengthOfStr));
+						var num_two = Math.floor((Math.random()*lengthOfStr));
+						if(num_one > num_two){
+							selfStr = randStr.substring(num_two, num_one);
+							previewStr = randomStr[Math.floor((Math.random()*(randomStr.length-1)))].substring(num_two, num_one);
+						}else{
+							selfStr = randStr.substring(num_one, num_two);
+							previewStr = randomStr[Math.floor((Math.random()*(randomStr.length-1)))].substring(num_one, num_two);
+						}
+						code = code.replace("selfSubString", selfStr);
+						code = code.replace("substring", previewStr);
 					}
 
 					if(code.includes("randomType")){
@@ -288,21 +250,21 @@ function randomInt(array, callback){
 
 							var num_one = Math.floor((Math.random()*lengthOfStr));
 							var num_two = Math.floor((Math.random()*lengthOfStr));
-							var randCorrectAnswer = Math.floor((Math.random()*100)+1);
+							var randCorrectAnswer = Math.random();
 							var previewStr;
 
 							code = code.replace("randomType", strType[4]);
-							if(randCorrectAnswer > 50){
+							if(randCorrectAnswer > 0.5){
 								if(num_one > num_two){
 									previewStr = randStr.substring(num_two, num_one);
 								}else{
 									previewStr = randStr.substring(num_one, num_two);
 								}
-							}else if(randCorrectAnswer > 0){
+							}else{
 								if(num_one > num_two){
-									previewStr = randomStr[Math.floor((Math.random()*8))].substring(num_two, num_one);
+									previewStr = randomStr[Math.floor((Math.random()*(randomStr.length-1)))].substring(num_two, num_one);
 								}else{
-									previewStr = randomStr[Math.floor((Math.random()*8))].substring(num_one, num_two);
+									previewStr = randomStr[Math.floor((Math.random()*(randomStr.length-1)))].substring(num_one, num_two);
 								}
 							}
 							code = code.replace("substring", previewStr);
@@ -358,9 +320,9 @@ function randomInt(array, callback){
 								array[jsonLength].Answer = randStr.substring(num_two, num_one);
 								
 								if(type == "MCwithNoCompile"){
-									var choices = [array[jsonLength].Answer.toString(), randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length))).toString(),
-									randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length))).toString(),
-									randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length))).toString()];
+									var choices = [array[jsonLength].Answer.toString(), randomStr[Math.floor((Math.random()*(randomStr.length-1)))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length))).toString(),
+									randomStr[Math.floor((Math.random()*(randomStr.length-1)))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length))).toString(),
+									randomStr[Math.floor((Math.random()*(randomStr.length-1)))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length))).toString()];
 									array[jsonLength].Choices = choices;
 									array[jsonLength].QuestionType = "MC";
 								}else{
@@ -374,9 +336,9 @@ function randomInt(array, callback){
 								array[jsonLength].Answer = randStr.substring(num_one, num_two);
 								
 								if(type == "MCwithNoCompile"){
-									var choices = [array[jsonLength].Answer.toString(), randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length))).toString(),
-									randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length))).toString(),
-									randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length))).toString()];
+									var choices = [array[jsonLength].Answer.toString(), randomStr[Math.floor((Math.random()*(randomStr.length-1)))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length))).toString(),
+									randomStr[Math.floor((Math.random()*(randomStr.length-1)))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length))).toString(),
+									randomStr[Math.floor((Math.random()*(randomStr.length-1)))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length))).toString()];
 									array[jsonLength].Choices = choices;
 									array[jsonLength].QuestionType = "MC";
 
@@ -403,9 +365,9 @@ function randomInt(array, callback){
 							array[jsonLength].Answer = randStr.indexOf(previewStr).toString();
 							
 							if(type == "MCwithNoCompile"){
-								var choices = [array[jsonLength].Answer.toString(), randomStr[Math.floor((Math.random()*8))].indexOf(randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)))).toString(),
-								randomStr[Math.floor((Math.random()*8))].indexOf(randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)))).toString(), 
-								randomStr[Math.floor((Math.random()*8))].indexOf(randomStr[Math.floor((Math.random()*8))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*8))].length)))).toString()];
+								var choices = [array[jsonLength].Answer.toString(), randomStr[Math.floor((Math.random()*(randomStr.length-1)))].indexOf(randomStr[Math.floor((Math.random()*(randomStr.length-1)))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length)))).toString(),
+								randomStr[Math.floor((Math.random()*(randomStr.length-1)))].indexOf(randomStr[Math.floor((Math.random()*(randomStr.length-1)))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length)))).toString(), 
+								randomStr[Math.floor((Math.random()*(randomStr.length-1)))].indexOf(randomStr[Math.floor((Math.random()*(randomStr.length-1)))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length)))).toString()];
 								array[jsonLength].Choices = choices;
 								array[jsonLength].QuestionType = "MC";
 							}else{
@@ -431,6 +393,10 @@ function randomInt(array, callback){
 			if(code.includes("randomInt4")){
 				code = code.replace("(randomInt4)", Math.floor((Math.random()*50)+1));
 			}
+			if(code.includes("randomInt5")){
+				code = code.replace("(randomInt5)", Math.floor((Math.random()*10)+1));
+			}
+
 			if(code.includes("randomDouble1")){
 				code = code.replace("(randomDouble1)", Math.round(((Math.random()*50)+1) * 100)/100);
 			}
@@ -641,6 +607,7 @@ async function writeProgram(item, questionNumber, callback){
 	await delay();
 			var code = item.Demo;
 			var type = item.Type;
+			//
 			var class_identifier = ("public class ");
 			var index1 = code.indexOf(class_identifier);
 			index1 == -1 ? -1 : (index1 += class_identifier.length);
