@@ -168,11 +168,27 @@ function insert(query, callback){
 router.get('/templateQuestion/:scope', function(req, res){
 
 	var searchingCriteria = {};
+	var searchingCriteriaTwo = {};
 	var questionJsonArray = [];
 	var outputAllQuestion = [];
-	searchingCriteria.Scope = req.params.scope;
+	var searchingCriteriaArray = [];
 
-	search(searchingCriteria, function(result){
+	if(req.params.scope == 'Exam01'){
+		searchingCriteria.Scope = req.params.scope;
+		searchingCriteriaArray.push(searchingCriteria);
+		console.log(searchingCriteriaArray);
+	}
+	else if(req.params.scope == 'Exam02'){
+		searchingCriteria.Scope = req.params.scope;
+		searchingCriteriaArray.push(searchingCriteria);
+		searchingCriteriaTwo.Scope = "Exam01";
+		searchingCriteriaArray.push(searchingCriteriaTwo);
+	}
+	else{
+		searchingCriteriaArray.push(searchingCriteria);
+	}
+
+	search(searchingCriteriaArray, function(result){
 		
 		randomInt(result, function(outputAllQuestion){
 
@@ -185,10 +201,10 @@ router.get('/templateQuestion/:scope', function(req, res){
 });
 
 //Get data from mongoDB
-function search(searchingCriteria, callback){
+function search(searchingCriteriaArray, callback){
 	mongodb.connect(url, {userNewUrlParser: true}, function(err, client){
 		console.log("Connected");
-		client.db("fyp").collection("template").find(searchingCriteria).toArray(function(err,result){
+		client.db("fyp").collection("template").find({$or:searchingCriteriaArray}).toArray(function(err,result){
 			callback(result);
 		});
 	});
@@ -201,7 +217,7 @@ function randomInt(array, callback){
 						"The Open University of Hong Kong", "Hope that you enjoy learning Java",
 						"How come a student can take all pass with no subject skills"];
 
-	var strType = ["indexOf(substring)", "substring(randomStrInt1, randomStrInt2)", "length", "charAt(randomStrInt1)", "contains(substring)"];
+	var strType = ["indexOf(substring)", "substring(randomStrInt1, randomStrInt2)", "length", "charAt(randomStrInt1)", "contains(substringFuc)"];
 	var outputAllQuestion = [];	
 	outputAllQuestion = [array.length];
 		var code = "";
@@ -267,7 +283,7 @@ function randomInt(array, callback){
 									previewStr = randomStr[Math.floor((Math.random()*(randomStr.length-1)))].substring(num_one, num_two);
 								}
 							}
-							code = code.replace("substring", previewStr);
+							code = code.replace("substringFuc", previewStr);
 							array[jsonLength].Answer = randStr.includes(previewStr).toString();
 							
 							if(type == "MCwithNoCompile"){
@@ -286,7 +302,15 @@ function randomInt(array, callback){
 							array[jsonLength].Answer = randStr.charAt(index).toString();
 
 							if(type == "MCwithNoCompile"){
-								var choices = [array[jsonLength].Answer, randStr.charAt(Math.floor((Math.random()*lengthOfStr))).toString(), randStr.charAt(Math.floor((Math.random()*lengthOfStr))).toString()];
+
+								choices = [array[jsonLength].Answer];
+									while(choices.length<4){
+										var randChoiceStr = randStr.charAt(Math.floor((Math.random()*lengthOfStr))).toString();
+										if(!choices.includes(randChoiceStr)){
+											choices.push(randChoiceStr);
+										}
+									}
+
 								array[jsonLength].Choices = choices;
 								array[jsonLength].QuestionType = "MC";
 							}else{
@@ -320,15 +344,20 @@ function randomInt(array, callback){
 								array[jsonLength].Answer = randStr.substring(num_two, num_one);
 								
 								if(type == "MCwithNoCompile"){
-									var choices = [array[jsonLength].Answer.toString(), randomStr[Math.floor((Math.random()*(randomStr.length-1)))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length))).toString(),
-									randomStr[Math.floor((Math.random()*(randomStr.length-1)))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length))).toString(),
-									randomStr[Math.floor((Math.random()*(randomStr.length-1)))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length))).toString()];
+
+									choices = [array[jsonLength].Answer];
+									while(choices.length<4){
+										var randInt = randomStr[Math.floor((Math.random()*(randomStr.length-1)))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length))).toString();
+										if(!choices.includes(randInt)){
+											choices.push(randInt);
+										}
+									}
+
 									array[jsonLength].Choices = choices;
 									array[jsonLength].QuestionType = "MC";
 								}else{
 									array[jsonLength].QuestionType = "FillIn";
 								}
-
 
 							}else{
 								code = code.replace("randomStrInt1", num_one);
@@ -336,9 +365,15 @@ function randomInt(array, callback){
 								array[jsonLength].Answer = randStr.substring(num_one, num_two);
 								
 								if(type == "MCwithNoCompile"){
-									var choices = [array[jsonLength].Answer.toString(), randomStr[Math.floor((Math.random()*(randomStr.length-1)))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length))).toString(),
-									randomStr[Math.floor((Math.random()*(randomStr.length-1)))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length))).toString(),
-									randomStr[Math.floor((Math.random()*(randomStr.length-1)))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length))).toString()];
+
+									choices = [array[jsonLength].Answer];
+									while(choices.length<4){
+										var randInt = randomStr[Math.floor((Math.random()*(randomStr.length-1)))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length))).toString();
+										if(!choices.includes(randInt)){
+											choices.push(randInt);
+										}
+									}
+
 									array[jsonLength].Choices = choices;
 									array[jsonLength].QuestionType = "MC";
 
@@ -365,9 +400,14 @@ function randomInt(array, callback){
 							array[jsonLength].Answer = randStr.indexOf(previewStr).toString();
 							
 							if(type == "MCwithNoCompile"){
-								var choices = [array[jsonLength].Answer.toString(), randomStr[Math.floor((Math.random()*(randomStr.length-1)))].indexOf(randomStr[Math.floor((Math.random()*(randomStr.length-1)))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length)))).toString(),
-								randomStr[Math.floor((Math.random()*(randomStr.length-1)))].indexOf(randomStr[Math.floor((Math.random()*(randomStr.length-1)))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length)))).toString(), 
-								randomStr[Math.floor((Math.random()*(randomStr.length-1)))].indexOf(randomStr[Math.floor((Math.random()*(randomStr.length-1)))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length)))).toString()];
+
+								choices = [array[jsonLength].Answer];
+									while(choices.length<4){
+										var randInt = randomStr[Math.floor((Math.random()*(randomStr.length-1)))].indexOf(randomStr[Math.floor((Math.random()*(randomStr.length-1)))].substring(Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length)), Math.floor((Math.random()*randomStr[Math.floor((Math.random()*(randomStr.length-1)))].length)))).toString();										if(!choices.includes(randInt)){
+											choices.push(randInt);
+										}
+									}
+
 								array[jsonLength].Choices = choices;
 								array[jsonLength].QuestionType = "MC";
 							}else{
@@ -643,9 +683,22 @@ async function writeProgram(item, questionNumber, callback){
 							aQuestion.Answer = correctAnswer;
 							if(type == "MC"){
 								if(code.includes("double")){
+									choices = [correctAnswer];
+									while(choices.length<4){
+										var randDouble = (Math.round(((Math.random()*50)+1) * 100)/100).toString();
+										if(!choices.includes(randDouble)){
+											choices.push(randDouble);
+										}
+									}
 									choices = [correctAnswer, (Math.round(((Math.random()*50)+1) * 100)/100).toString(), (Math.round(((Math.random()*50)+1) * 100)/100).toString(), (Math.round(((Math.random()*50)+1) * 100)/100).toString()];
 								}else{
-									choices = [correctAnswer, Math.floor((Math.random()*50)+1).toString(), Math.floor((Math.random()*50)+1).toString(), Math.floor((Math.random()*50)+1).toString()];
+									choices = [correctAnswer];
+									while(choices.length<4){
+										var randInt = Math.floor((Math.random()*50)+1).toString();
+										if(!choices.includes(randInt)){
+											choices.push(randInt);
+										}
+									}
 								}
 								aQuestion.QuestionType = "MC";
 								aQuestion.Choices = choices;
