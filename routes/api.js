@@ -216,8 +216,9 @@ function randomInt(array, callback){
 						"Every project would have a free rider groupmate and you cannot avoid him!", "Winner winner, chicken dinner",
 						"The Open University of Hong Kong", "Hope that you enjoy learning Java",
 						"How come a student can take all pass with no subject skills"];
+	var randName = ["Raymond", "Dicky", "Oscar", "Anson", "Andy", "Ben", "Samuel"];
 
-	var strType = ["indexOf(substring)", "substring(randomStrInt1, randomStrInt2)", "length", "charAt(randomStrInt1)", "contains(substringFuc)"];
+	var strType = ["indexOf(substring)", "substring(randomStrInt1, randomStrInt2)", "length", "charAt(randomStrInt1)", "contains(containsString)"];
 	var outputAllQuestion = [];	
 	outputAllQuestion = [array.length];
 		var code = "";
@@ -234,6 +235,11 @@ function randomInt(array, callback){
 
 			code = array[jsonLength].Demo;
 			type = array[jsonLength].Type;
+
+			//For randName
+			if(code.includes("randomString2")){
+				code = code.replace("(randomString2)", randName[Math.floor((Math.random()*(randName.length-1)))]);
+			}
 
 			//For String
 			if(code.includes("randomString1")){
@@ -283,7 +289,7 @@ function randomInt(array, callback){
 									previewStr = randomStr[Math.floor((Math.random()*(randomStr.length-1)))].substring(num_one, num_two);
 								}
 							}
-							code = code.replace("substringFuc", previewStr);
+							code = code.replace("containsString", "\""+previewStr+"\"");
 							array[jsonLength].Answer = randStr.includes(previewStr).toString();
 							
 							if(type == "MCwithNoCompile"){
@@ -389,7 +395,7 @@ function randomInt(array, callback){
 							var num_two = Math.floor((Math.random()*lengthOfStr));
 							var previewStr;
 
-							code = code.replace("randomType", strType[4]);
+							code = code.replace("randomType", strType[0]);
 							if(num_one > num_two){
 								previewStr = randStr.substring(num_two, num_one);
 							}else{
@@ -632,7 +638,9 @@ async function forNoneCompile(item, questionNumber, callback){
 	await delay();
 	var notNeedComplete = {};
 	notNeedComplete.QuestionNumber = questionNumber;
-	notNeedComplete.QuestionTitle = item.Demo;
+	code = item.Demo;
+	code = code.replace(/[;]/g, "; /n");
+	notNeedComplete.QuestionTitle = code;
 	notNeedComplete.Answer = item.Answer;
 	if(item.QuestionType == "MC"){
 		notNeedComplete.Choices = item.Choices;
@@ -677,7 +685,10 @@ async function writeProgram(item, questionNumber, callback){
 						  compile_temp(class_name ,function(response){
 						  	var aQuestion = {};
 						  	var correctAnswer = "";
-							aQuestion.QuestionNumber = questionNumber;				
+							aQuestion.QuestionNumber = questionNumber;
+							code = code.replace(/[{]/g, "{ /n");
+							code = code.replace(/[;]/g, "; /n");
+							code = code.replace(/[}]/g, "} /n");				
 							aQuestion.QuestionTitle = code;
 							correctAnswer = response.out.replace("\n","");
 							aQuestion.Answer = correctAnswer;
