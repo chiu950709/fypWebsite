@@ -48,28 +48,29 @@ router.post('/register', function(req, res){
 							response.status += 'Nickname already taken!\n';
 							res.setHeader("content-type","application/json");
 							res.send(response);
-						}
-						if(password == undefined){
-							response.status += 'Password cannot be empty!\n';
-							res.setHeader("content-type","application/json");
-							res.send(response);
 						}else{
-							var user = {}
-							user.userName = req.body.userName;
-							user.password = req.body.password;
-							user.nickName = req.body.nickName;
-							user.joinDate = new Date().toDateString();
-							createUser(user, function(result){
-								if(result){
-									response.status = 'User account created';
-									res.setHeader("content-type","application/json");
-									res.send(response);
-								}else{
-									response.status = 'User account failed to create';
-									res.setHeader("content-type","application/json");
-									res.send(response);
-								}
-							});
+							if(password == undefined){
+								response.status += 'Password cannot be empty!\n';
+								res.setHeader("content-type","application/json");
+								res.send(response);
+							}else{
+								var user = {}
+								user.userName = req.body.userName;
+								user.password = req.body.password;
+								user.nickName = req.body.nickName;
+								user.joinDate = new Date().toDateString();
+								createUser(user, function(result){
+									if(result){
+										response.status = 'User account created';
+										res.setHeader("content-type","application/json");
+										res.send(response);
+									}else{
+										response.status = 'User account failed to create';
+										res.setHeader("content-type","application/json");
+										res.send(response);
+									}
+								});
+							}
 						}
 					});
 				}	
