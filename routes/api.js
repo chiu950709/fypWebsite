@@ -18,10 +18,24 @@ router.get('/', function(req, res, next) {
 //Forum api
 
 //Search All Post
-router.get('/viewpost', function(req, res){
+router.get('/viewpost/:pageNo', function(req, res){
 	searchPost(function(result){
+		var from = req.params.pageNo * 10;
+		var resultArray = [];
+		var to = 0;
+
 		res.setHeader("content-type","application/json");
-		res.send(result);
+
+		if(from+10 > result.length){
+			to = result.length;
+		}
+
+		for(var i = from; i<=from+10; i++){
+			if(result[i] != null){
+				resultArray.push(result[i]);
+			}
+		}
+		res.send(resultArray);
 	});
 });
 function searchPost(callback){
@@ -34,7 +48,7 @@ function searchPost(callback){
 }
 
 //Search Individual Post
-router.get('/viewpost/:postid', function(req, res){
+router.get('/viewIndpost/:postid', function(req, res){
 	var searchingCriteria = {};
 	searchingCriteria._id = ObjectId(req.params.postid);
 	searchIsoPost(searchingCriteria, function(result){
