@@ -69,7 +69,8 @@ function searchIsoPost(searchingCriteria, callback){
 router.post('/post', function(req, res){
 	var query = {};
 	query.name = req.body.name;
-	query.userId = req.body.userId;
+	var preUserId = req.body.userId; 
+	query.userId = "ObjectId(\""+preUserId+"\")";
 	query.title = req.body.title;
 	query.content = req.body.content;
 	query.date = new Date().toDateString();
@@ -103,7 +104,8 @@ router.put('/viewpost/:postid/comment', function(req, res){
 
 	var query = {};
 	query.name = req.body.name;
-	query.userId = req.body.userId;
+	var preUserId = req.body.userId; 
+	query.userId = "ObjectId(\""+preUserId+"\")";
 	query.content = req.body.content;
 	query.date = new Date().toDateString();
 
