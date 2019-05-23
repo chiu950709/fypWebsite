@@ -3,6 +3,7 @@ var router = express.Router();
 var mongodb = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectID;
 var async = require('async');
+var bcrypt = require('bcrypt');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -98,17 +99,34 @@ router.post('/login', function(req, res){
 		flag = false;
 	}
 	if(flag){
-		userLogin(userName, password, function(result){
+		userLogin(userName, function(result){
 			if(result){
-				response.status = "Login Successful";
-				response.nickName = result.nickName;
-				response.objID = result._id;
+				bcrypt.compare(password,result.password,function(err,auth){
+					if(err){
+						console.log(err);
+					}
+					else{
+						if(auth){
+							console.log("Correct")
+							response.status = "Login Successful";
+							response.nickName = result.nickName;
+							response.objID = result._id;	
+						}else{
+							console.log("Incorrect")
+							response.status = "Login Failed";
+							response.reason = "Incorrect Username or Password"
+						}
+						res.setHeader("content-type","application/json");
+						res.send(response);
+					}
+				});
 			}else{
+				console.log("No User")
 				response.status = "Login Failed";
 				response.reason = "Incorrect Username or Password"
+				res.setHeader("content-type","application/json");
+				res.send(response);
 			}
-			res.setHeader("content-type","application/json");
-			res.send(response);
 		});
 
 	}else{
@@ -118,26 +136,47 @@ router.post('/login', function(req, res){
 
 });
 
-
-function userLogin(name, pw, callback){
+function userLogin(name, callback){
 	console.log("userLogin()")
 	mongodb.connect(url,{ useNewUrlParser: true }, function(err, client){
 		console.log("Connected");
-		client.db("fyp").collection("user").findOne({userName : name , password : pw}, function(err,result){
+		client.db("fyp").collection("user").findOne({userName : name}, function(err,result){
 			callback(result);
 		});
 	});
 }
 	
 
-function createUser(user, callback){
+async function createUser(user, callback){
 	console.log("createUser()")
-	mongodb.connect(url, function(err, client){
+	await hashPassword(user.password,function(hashPassword){
+		user.password = hashPassword;
+	});
+	console.log("After : " + user.password);
+	mongodb.connect(url, { useNewUrlParser: true },function(err, client){
 		console.log("Connected");
 		client.db("fyp").collection("user").insertOne(user, function(err,result){
 			callback(result);
 		});
 	});
+}
+
+function hashPassword(password,callback){
+	console.log("Hashing")
+	 bcrypt.genSalt(10,function(err,salt){
+	 	if(err){
+	 		return console.log(err);
+	 	}
+
+		bcrypt.hash(password,salt,function(err,hashedPassword){
+			if(err){
+		 		return console.log(err);
+		 	}
+		 	console.log("Hash = " + hashedPassword)
+		 	callback(hashedPassword);
+	 	});
+
+	 });
 }
 
 function searchUser(searchingCriteria, callback){
