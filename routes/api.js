@@ -68,7 +68,7 @@ function searchIsoPost(searchingCriteria, callback){
 //Create Post
 router.post('/post', function(req, res){
 	var query = {};
-	query.name = req.body.name;
+	//query.name = req.body.name;
 	var preUserId = req.body.userId; 
 	query.userId = "ObjectId(\""+preUserId+"\")";
 	query.title = req.body.title;
@@ -103,13 +103,14 @@ router.put('/viewpost/:postid/comment', function(req, res){
 	searchingCriteria._id = ObjectId(req.params.postid);
 
 	var query = {};
-	query.name = req.body.name;
+	//query.name = req.body.name;
 	var preUserId = req.body.userId; 
 	query.userId = "ObjectId(\""+preUserId+"\")";
 	query.content = req.body.content;
 	query.date = new Date().toDateString();
 
 	commentForPost(searchingCriteria, query, function(result){
+		var response = {};
 		if(result){
 			response.status = 'Comment Successful';
 			res.setHeader("content-type","application/json");
@@ -124,7 +125,7 @@ router.put('/viewpost/:postid/comment', function(req, res){
 function commentForPost(searchingCriteria, query, callback){
 	mongodb.connect(url, function(err, client){
 		console.log("Connected");
-		client.db("fyp").collection("forum_post").update(searchingCriteria, {$push: {comment: query}}, function(err,result){
+		client.db("fyp").collection("forum_post").updateOne(searchingCriteria, {$push: {comment: query}}, function(err,result){
 			callback(result);
 		});
 	});
